@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
   console.log('[QuizHub Lobby] Share URL:', shareUrl);
 
   // ── Share buttons ──
-  const shareMessage = `Join my Quiz Duel on Quiz Hub! 🏆\nBattle Link: ${shareUrl}`;
+  const shareMessage = `Join my Quiz Duel on Quiz Bay! 🏆\nBattle Link: ${shareUrl}`;
 
   document.getElementById('shareWhatsapp').addEventListener('click', () => {
     window.open(`https://wa.me/?text=${encodeURIComponent(shareMessage)}`, '_blank');

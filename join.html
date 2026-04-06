@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Quiz Hub - Challenger Gateway</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700;800;900&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="config.js" defer></script>
+    <script src="join.js" defer></script>
+    <script id="tailwind-config">
+          tailwind.config = {
+            darkMode: "class",
+            theme: {
+              extend: {
+                "colors": {
+                        "secondary": "#745700",
+                        "error": "#b41340",
+                        "on-secondary-container": "#5b4400",
+                        "primary-fixed-dim": "#bd6efe",
+                        "on-primary": "#fceeff",
+                        "surface-variant": "#dbdddd",
+                        "error-dim": "#a70138",
+                        "surface-container-high": "#e1e3e3",
+                        "on-secondary": "#fff1da",
+                        "outline": "#757777",
+                        "on-tertiary-fixed": "#2c4e48",
+                        "on-tertiary-fixed-variant": "#496b65",
+                        "on-secondary-fixed-variant": "#674d00",
+                        "inverse-surface": "#0c0f0f",
+                        "inverse-primary": "#bb6bfb",
+                        "outline-variant": "#acadad",
+                        "tertiary-dim": "#345650",
+                        "tertiary-fixed-dim": "#c5eae2",
+                        "inverse-on-surface": "#9c9d9d",
+                        "surface-tint": "#812fc1",
+                        "secondary-fixed": "#f9cc61",
+                        "background": "#f6f6f6",
+                        "surface-bright": "#f6f6f6",
+                        "surface-container": "#e7e8e8",
+                        "surface": "#f6f6f6",
+                        "on-error": "#ffefef",
+                        "primary-fixed": "#c782ff",
+                        "on-background": "#2d2f2f",
+                        "primary": "#812fc1",
+                        "on-surface-variant": "#5a5c5c",
+                        "secondary-fixed-dim": "#eabe55",
+                        "on-tertiary-container": "#3e605a",
+                        "on-secondary-fixed": "#443100",
+                        "on-primary-fixed": "#000000",
+                        "primary-container": "#c782ff",
+                        "on-primary-fixed-variant": "#450073",
+                        "tertiary-container": "#d3f9f0",
+                        "on-tertiary": "#d5faf2",
+                        "on-error-container": "#510017",
+                        "surface-container-low": "#f0f1f1",
+                        "secondary-dim": "#664c00",
+                        "tertiary": "#40625c",
+                        "error-container": "#f74b6d",
+                        "on-primary-container": "#38005e",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-container": "#f9cc61",
+                        "surface-container-highest": "#dbdddd",
+                        "on-surface": "#2d2f2f",
+                        "tertiary-fixed": "#d3f9f0",
+                        "primary-dim": "#741eb4",
+                        "surface-dim": "#d2d5d5"
+                },
+                "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                },
+                "fontFamily": {
+                        "headline": ["Lexend"],
+                        "body": ["Plus Jakarta Sans"],
+                        "label": ["Lexend"]
+                }
+              },
+            },
+          }
+        </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .btn-3d-lip-secondary {
+            box-shadow: 0 6px 0 0 #5b4400;
+        }
+        .btn-3d-lip-mint {
+            box-shadow: 0 8px 0 0 #2c4e48;
+        }
+        .glow-overlay {
+            background: linear-gradient(135deg, rgba(129,47,193,0.1), rgba(249,204,97,0.1));
+        }
+    </style>
+</head>
+<body class="bg-white font-body text-on-surface overflow-x-hidden min-h-screen">
+    <!-- TopAppBar Navigation -->
+    <nav class="fixed top-0 w-full z-50 rounded-b-[3rem] bg-white/60 backdrop-blur-md shadow-[0_10px_30px_-15px_rgba(157,78,221,0.15)] flex justify-between items-center px-8 py-4">
+        <div class="flex items-center gap-2">
+            <span class="text-2xl font-black tracking-tight text-purple-600 italic font-headline cursor-pointer" onclick="window.location.href='index.html'">Quiz Hub</span>
+        </div>
+        <div class="flex items-center">
+            <button class="material-symbols-outlined text-purple-600 text-3xl hover:scale-105 transition-transform duration-200">person</button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="pt-24 pb-32 px-6 flex flex-col items-center max-w-5xl mx-auto min-h-screen justify-center text-center">
+        
+        <div id="challengeCard">
+            <!-- Hero Section -->
+            <div class="relative w-full mb-12 flex flex-col items-center">
+                <!-- Decorative Blobs -->
+                <div class="absolute -top-10 -left-10 w-48 h-48 bg-primary/10 rounded-full blur-3xl opacity-60"></div>
+                <div class="absolute -bottom-10 -right-10 w-64 h-64 bg-secondary/10 rounded-full blur-3xl opacity-60"></div>
+                
+                <!-- Hero Illustration -->
+                <div class="relative z-10 w-64 h-64 md:w-80 md:h-80 bg-surface-container-low rounded-xl flex items-center justify-center p-8 transform rotate-3 hover:rotate-0 transition-transform duration-500">
+                    <img alt="Challenge Character" class="w-full h-full object-contain drop-shadow-[0_20px_40px_rgba(129,47,193,0.3)]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBh-YVPR9EYnCfgEvRy-QyfdtWaDBRMto3uNde1T6Rs3Ar-4DwJcVlb2Pp4b1PN1UNn_MWlIhvixpPTVb2tCS1pXs-O_DB84XqWqP__heca59f-4Tm6fFDDwgeV8_dM8CalY9d3gD-aONIMtfdeEU648nD8hwiK-kAVC2EwBLxxm9xZJv0sECKNzWpdWFD9FX3wUAT0De5xqOnxuxe7anNyJnZUGQJ1q5op_YRZSnSRXHVWiD2ewvcUy2nSGVenQx282N0ek4XahyE"/>
+                    <!-- Floating Badge -->
+                    <div class="absolute -top-4 -right-4 bg-secondary-container text-on-secondary-fixed p-3 rounded-xl shadow-lg transform -rotate-12 flex items-center gap-2">
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">bolt</span>
+                        <span class="font-headline font-bold text-sm">LEVEL UP!</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Headline -->
+            <div class="max-w-2xl mx-auto">
+                <h1 class="font-headline font-extrabold text-4xl md:text-5xl text-on-surface leading-tight tracking-tight mb-4">
+                    <span id="hostName" class="text-primary italic">A friend</span> has challenged you to a <span class="text-primary italic">Quiz Duel!</span>
+                </h1>
+                
+                <!-- Game Info Badges -->
+                <div id="gameInfoBadges" class="flex gap-4 justify-center flex-wrap mb-12">
+                    <div id="badgeTopic" class="bg-primary/10 text-primary px-6 py-2 rounded-full font-headline font-bold flex items-center gap-2">
+                        <span class="material-symbols-outlined text-sm">book_open</span>
+                        Loading...
+                    </div>
+                    <div id="badgeQuestions" class="bg-secondary/10 text-secondary px-6 py-2 rounded-full font-headline font-bold flex items-center gap-2">
+                        <span class="material-symbols-outlined text-sm">quiz</span>
+                        Loading...
+                    </div>
+                </div>
+
+                <!-- Opponent Nickname Input -->
+                <div class="flex flex-col items-center max-w-sm mx-auto mb-8">
+                    <label class="font-headline font-bold text-xl mb-4 flex items-center gap-2 text-tertiary" for="joinNickname">
+                        <span class="material-symbols-outlined" data-icon="stadium">stadium</span>
+                        Ready to battle?
+                    </label>
+                    <input type="text" id="joinNickname" class="w-full px-6 py-4 rounded-xl border-4 border-surface-container-high focus:border-tertiary focus:outline-none placeholder-on-surface-variant/50 font-headline font-bold text-xl text-center shadow-inner text-on-surface transition-all" placeholder="Enter Your Nickname..." maxlength="20" autocomplete="off" />
+                </div>
+
+                <!-- Accept CTA -->
+                <div class="flex flex-col items-center gap-6 w-full max-w-sm mx-auto">
+                    <button id="acceptBtn" class="group w-full bg-tertiary text-on-tertiary-fixed font-headline font-black text-3xl py-8 px-12 rounded-xl transition-all duration-200 active:scale-95 active:translate-y-2 btn-3d-lip-mint relative overflow-hidden flex flex-col items-center justify-center">
+                        <div class="absolute top-0 left-0 w-full h-1/2 bg-white/10 rounded-t-xl"></div>
+                        <span class="relative z-10 group-active:hidden uppercase">Accept Challenge</span>
+                        <span class="relative z-10 hidden group-active:block tracking-widest">3... 2... 1...</span>
+                    </button>
+                    
+                    <div class="flex gap-4 w-full">
+                        <button onclick="window.location.href='index.html'" class="flex-1 bg-surface-container-highest text-on-surface-variant font-headline font-bold py-4 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95 shadow-md">
+                            REJECT
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error Card (Hidden) -->
+        <div id="errorCard" class="hidden flex flex-col items-center bg-white p-12 rounded-3xl soft-shadow max-w-lg w-full">
+            <span class="material-symbols-outlined text-error text-8xl mb-6" style="font-variation-settings: 'FILL' 1;">warning</span>
+            <h2 class="font-headline font-extrabold text-3xl mb-4 text-on-surface">Challenge Not Found</h2>
+            <p class="text-on-surface-variant text-lg font-medium mb-12">This duel may have expired or been cancelled by the host.</p>
+            <button onclick="window.location.href='index.html'" class="w-full bg-primary text-white font-headline font-black text-2xl py-6 rounded-xl transition-all active:scale-95 shadow-xl lip-primary">
+                RETURN TO BASE
+            </button>
+        </div>
+
+    </main>
+
+    <!-- BottomNavBar for Mobile -->
+    <nav class="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-2 bg-slate-50/80 backdrop-blur-xl z-50 rounded-t-[3rem] shadow-[0_-10px_40px_rgba(157,78,221,0.1)]">
+        <a class="flex flex-col items-center justify-center text-slate-400 px-4 py-2 hover:text-purple-500 transition-colors" href="index.html">
+            <span class="material-symbols-outlined">home_app_logo</span>
+            <span class="font-lexend text-[12px] font-semibold">Home</span>
+        </a>
+        <a class="flex flex-col items-center justify-center bg-purple-100 text-purple-700 rounded-[2rem] px-6 py-2 scale-110 -translate-y-2 shadow-inner" href="#">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">swords</span>
+            <span class="font-lexend text-[12px] font-semibold">Battles</span>
+        </a>
+        <a class="flex flex-col items-center justify-center text-slate-400 px-4 py-2 hover:text-purple-500 transition-colors" href="#">
+            <span class="material-symbols-outlined">trophy</span>
+            <span class="font-lexend text-[12px] font-semibold">Rankings</span>
+        </a>
+        <a class="flex flex-col items-center justify-center text-slate-400 px-4 py-2 hover:text-purple-500 transition-colors" href="#">
+            <span class="material-symbols-outlined">account_circle</span>
+            <span class="font-lexend text-[12px] font-semibold">Profile</span>
+        </a>
+    </nav>
+</body>
+</html>

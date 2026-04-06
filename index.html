@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Quiz Hub - AI Setup</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800;900&amp;family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="config.js" defer></script>
+    <script src="index.js" defer></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                "secondary": "#745700",
+                "error": "#b41340",
+                "on-secondary-container": "#5b4400",
+                "primary-fixed-dim": "#bd6efe",
+                "on-primary": "#fceeff",
+                "surface-variant": "#dbdddd",
+                "error-dim": "#a70138",
+                "surface-container-high": "#e1e3e3",
+                "on-secondary": "#fff1da",
+                "outline": "#757777",
+                "on-tertiary-fixed": "#2c4e48",
+                "on-tertiary-fixed-variant": "#496b65",
+                "on-secondary-fixed-variant": "#674d00",
+                "inverse-surface": "#0c0f0f",
+                "inverse-primary": "#bb6bfb",
+                "outline-variant": "#acadad",
+                "tertiary-dim": "#345650",
+                "tertiary-fixed-dim": "#c5eae2",
+                "inverse-on-surface": "#9c9d9d",
+                "surface-tint": "#812fc1",
+                "secondary-fixed": "#f9cc61",
+                "background": "#ffffff",
+                "surface-bright": "#f6f6f6",
+                "surface-container": "#e7e8e8",
+                "surface": "#f6f6f6",
+                "on-error": "#ffefef",
+                "primary-fixed": "#c782ff",
+                "on-background": "#2d2f2f",
+                "primary": "#812fc1",
+                "on-surface-variant": "#5a5c5c",
+                "secondary-fixed-dim": "#eabe55",
+                "on-tertiary-container": "#3e605a",
+                "on-secondary-fixed": "#443100",
+                "on-primary-fixed": "#000000",
+                "primary-container": "#c782ff",
+                "on-primary-fixed-variant": "#450073",
+                "tertiary-container": "#d3f9f0",
+                "on-tertiary": "#d5faf2",
+                "on-error-container": "#510017",
+                "surface-container-low": "#f0f1f1",
+                "secondary-dim": "#664c00",
+                "tertiary": "#40625c",
+                "error-container": "#f74b6d",
+                "on-primary-container": "#38005e",
+                "surface-container-lowest": "#ffffff",
+                "secondary-container": "#f9cc61",
+                "surface-container-highest": "#dbdddd",
+                "on-surface": "#2d2f2f",
+                "tertiary-fixed": "#d3f9f0",
+                "primary-dim": "#741eb4",
+                "surface-dim": "#d2d5d5"
+              },
+              "borderRadius": {
+                "DEFAULT": "1rem",
+                "lg": "2rem",
+                "xl": "3rem",
+                "full": "9999px"
+              },
+              "fontFamily": {
+                "headline": ["Lexend"],
+                "body": ["Plus Jakarta Sans"],
+                "label": ["Lexend"]
+              }
+            }
+          }
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+        }
+        .bouncy-hover:hover {
+            transform: scale(1.05) translateY(-4px);
+        }
+        .bouncy-active:active {
+            transform: scale(0.95);
+        }
+        .soft-shadow {
+            box-shadow: 0 20px 40px -15px rgba(129, 47, 193, 0.12);
+        }
+        .lip-primary {
+            box-shadow: 0 4px 0 0 #5e1f91;
+        }
+        .lip-secondary {
+            box-shadow: 0 4px 0 0 #e1e3e3;
+        }
+        .toggle-tab.active {
+            border-color: #812fc1 !important;
+            background-color: rgba(129, 47, 193, 0.05);
+        }
+        .level-btn.active {
+            box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.5), 0 4px 0 0 currentColor;
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body class="bg-white font-body text-on-surface antialiased">
+    <!-- TopAppBar -->
+    <header class="fixed top-0 w-full z-50 rounded-b-[3rem] bg-white/60 backdrop-blur-md shadow-[0_10px_30px_-15px_rgba(157,78,221,0.15)] flex justify-between items-center px-8 py-4">
+        <div class="text-2xl font-black tracking-tight text-purple-600 italic font-headline">
+            Quiz Hub
+        </div>
+        <div class="flex items-center gap-4">
+            <div class="material-symbols-outlined text-purple-600 text-3xl cursor-pointer hover:scale-105 transition-transform duration-200" data-icon="person">person</div>
+        </div>
+    </header>
+
+    <main class="pt-32 pb-40 px-6 max-w-5xl mx-auto min-h-screen">
+        <!-- Nickname Input Section -->
+        <div class="flex flex-col items-center max-w-sm mx-auto mb-12">
+            <label class="font-headline font-bold text-xl mb-4 flex items-center gap-2 text-primary" for="nickname">
+                <span class="material-symbols-outlined" data-icon="badge">badge</span>
+                What's your Nickname?
+            </label>
+            <input type="text" id="nickname" class="w-full px-6 py-4 rounded-xl border-4 border-surface-container-high focus:border-primary focus:outline-none placeholder-on-surface-variant/50 font-headline font-bold text-xl text-center shadow-inner text-on-surface transition-all" placeholder="Enter Nickname..." maxlength="20" autocomplete="off" />
+        </div>
+
+        <!-- Hero Header -->
+        <div class="text-center mb-12">
+            <h1 class="font-headline font-extrabold text-4xl md:text-5xl text-primary tracking-tight mb-4">
+                What are we learning today?
+            </h1>
+            <p class="text-on-surface-variant text-lg font-medium">Choose your source and let the system work its magic.</p>
+        </div>
+
+        <!-- Central Bento Box (Source Toggle) -->
+        <div id="sourceToggle" class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+            <!-- Type a Topic Card -->
+            <div data-source="topic" class="toggle-tab active group surface-container-lowest soft-shadow rounded-xl p-8 flex flex-col items-center justify-center text-center transition-all duration-300 bouncy-hover cursor-pointer border-4 border-transparent hover:border-secondary-container relative overflow-hidden">
+                <div class="w-24 h-24 bg-secondary-container rounded-full flex items-center justify-center mb-6 relative">
+                    <div class="absolute inset-0 bg-secondary opacity-10 animate-pulse rounded-full"></div>
+                    <span class="material-symbols-outlined text-on-secondary-container text-5xl" data-icon="auto_fix_high">auto_fix_high</span>
+                </div>
+                <h3 class="font-headline font-bold text-2xl mb-2">Type a Topic</h3>
+                <p class="text-on-surface-variant font-medium">Explore any subject from space travel to history.</p>
+            </div>
+
+            <!-- Upload PDF Card -->
+            <div data-source="pdf" class="toggle-tab group surface-container-lowest soft-shadow rounded-xl p-8 flex flex-col items-center justify-center text-center transition-all duration-300 bouncy-hover cursor-pointer border-4 border-transparent hover:border-primary-container relative overflow-hidden">
+                <div class="w-24 h-24 bg-primary-container rounded-full flex items-center justify-center mb-6 relative">
+                    <div class="absolute inset-0 bg-primary opacity-10 animate-pulse rounded-full"></div>
+                    <span class="material-symbols-outlined text-on-primary-container text-5xl" data-icon="description">description</span>
+                </div>
+                <h3 class="font-headline font-bold text-2xl mb-2">Upload PDF</h3>
+                <p class="text-on-surface-variant font-medium">Turn any document or notes into a competitive quiz.</p>
+            </div>
+        </div>
+
+        <!-- Source Specific Inputs -->
+        <div class="max-w-2xl mx-auto mb-16">
+            <!-- Topic Input Group -->
+            <div id="topicGroup" style="display: block;">
+                <div class="flex flex-col items-center">
+                    <input type="text" id="topicInput" class="w-full px-6 py-4 rounded-xl border-4 border-surface-container-high focus:border-secondary focus:outline-none placeholder-on-surface-variant/50 font-body text-xl text-center shadow-inner text-on-surface transition-all" placeholder="e.g., Quantum Physics, World War II, JavaScript ES6..." autocomplete="off">
+                </div>
+            </div>
+
+            <!-- PDF Upload Group -->
+            <div id="pdfGroup" style="display: none;">
+                <div class="w-full border-4 border-dashed border-primary-container rounded-xl p-8 flex flex-col items-center justify-center bg-surface-container-low/50 cursor-pointer hover:bg-primary-container/10 transition-all" id="pdfDropZone">
+                    <input type="file" id="pdfFileInput" accept=".pdf" style="display: none;">
+                    
+                    <div id="pdfUploadContent" class="flex flex-col items-center">
+                        <span class="material-symbols-outlined text-primary text-6xl mb-4" data-icon="cloud_upload">cloud_upload</span>
+                        <p class="font-headline font-bold text-xl mb-2">Drop your PDF here</p>
+                        <p class="text-on-surface-variant font-medium">or click to browse files</p>
+                    </div>
+
+                    <div id="pdfLoading" class="hidden flex-col items-center">
+                        <div class="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
+                        <p class="font-headline font-bold text-lg">Analyzing PDF...</p>
+                    </div>
+
+                    <div id="pdfUploadSuccess" class="hidden flex-col items-center">
+                        <span class="material-symbols-outlined text-emerald-500 text-6xl mb-4" data-icon="check_circle">check_circle</span>
+                        <p id="pdfFileName" class="font-headline font-bold text-xl mb-1"></p>
+                        <p id="pdfCharCount" class="text-on-surface-variant font-medium mb-4"></p>
+                        <button id="pdfRemoveBtn" type="button" class="px-6 py-2 bg-error-container text-on-error-container rounded-full font-headline font-bold hover:scale-105 active:scale-95 transition-all">Remove File</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Configuration Section -->
+        <div class="space-y-12 max-w-2xl mx-auto">
+            <!-- Level Selector -->
+            <div class="flex flex-col items-center">
+                <span class="font-headline font-bold text-xl mb-6 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary" data-icon="leaderboard">leaderboard</span>
+                    Choose Level
+                </span>
+                <div id="levelSelector" class="flex flex-wrap justify-center gap-4">
+                    <button data-level="easy" class="level-btn px-8 py-3 rounded-full font-headline font-bold text-white bg-emerald-500 shadow-[0_4px_0_0_#059669] transition-all bouncy-hover bouncy-active">
+                        Easy
+                    </button>
+                    <button data-level="medium" class="level-btn active px-8 py-3 rounded-full font-headline font-bold text-white bg-orange-500 shadow-[0_4px_0_0_#d97706] transition-all bouncy-active ring-4 ring-orange-200">
+                        Medium
+                    </button>
+                    <button data-level="hard" class="level-btn px-8 py-3 rounded-full font-headline font-bold text-white bg-rose-500 shadow-[0_4px_0_0_#e11d48] transition-all bouncy-hover bouncy-active">
+                        Hard
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quantity Stepper -->
+            <div class="flex flex-col items-center">
+                <span class="font-headline font-bold text-xl mb-6 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary" data-icon="quiz">quiz</span>
+                    Question Count
+                </span>
+                <div class="flex items-center gap-6 bg-surface-container-low p-4 rounded-xl">
+                    <button type="button" id="decrementBtn" class="w-14 h-14 rounded-full bg-white flex items-center justify-center text-primary font-bold text-2xl shadow-sm lip-secondary hover:translate-y-[2px] transition-all bouncy-active">
+                        <span class="material-symbols-outlined" data-icon="remove">remove</span>
+                    </button>
+                    <div class="w-24 text-center">
+                        <span id="questionCountValue" class="font-headline font-black text-4xl text-primary">5</span>
+                        <input type="range" id="questionCount" min="1" max="20" value="5" class="hidden">
+                        <p class="font-label text-xs uppercase tracking-widest text-on-surface-variant opacity-60">Items</p>
+                    </div>
+                    <button type="button" id="incrementBtn" class="w-14 h-14 rounded-full bg-white flex items-center justify-center text-primary font-bold text-2xl shadow-sm lip-secondary hover:translate-y-[2px] transition-all bouncy-active">
+                        <span class="material-symbols-outlined" data-icon="add">add</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- CTA -->
+            <div class="flex flex-col items-center pt-8">
+                <button id="initBtn" class="w-full py-6 rounded-xl font-headline font-black text-2xl text-white bg-gradient-to-br from-primary to-primary-dim shadow-[0_10px_40px_rgba(129,47,193,0.3)] lip-primary transition-all bouncy-hover bouncy-active flex items-center justify-center gap-4">
+                    <span class="material-symbols-outlined text-3xl" data-icon="magic_button">magic_button</span>
+                    Initialize Quiz
+                </button>
+                <p class="mt-6 text-on-surface-variant font-medium text-sm flex items-center gap-2">
+                    <span class="material-symbols-outlined text-sm" data-icon="bolt">bolt</span>
+                    The Quiz is ready and warmed up
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <!-- BottomNavBar -->
+    <nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-2 bg-slate-50/80 backdrop-blur-xl shadow-[0_-10px_40px_rgba(157,78,221,0.1)] rounded-t-[3rem] z-50">
+        <a class="flex flex-col items-center justify-center bg-purple-100 text-purple-700 rounded-[2rem] px-6 py-2 scale-110 -translate-y-2 shadow-inner transition-all duration-200" href="#">
+            <span class="material-symbols-outlined" data-icon="home_app_logo" style="font-variation-settings: 'FILL' 1;">home_app_logo</span>
+            <span class="font-lexend text-[12px] font-semibold">Home</span>
+        </a>
+        <a class="flex flex-col items-center justify-center text-slate-400 px-4 py-2 hover:text-purple-500 transition-colors" href="#">
+            <span class="material-symbols-outlined" data-icon="swords">swords</span>
+            <span class="font-lexend text-[12px] font-semibold">Battles</span>
+        </a>
+        <a class="flex flex-col items-center justify-center text-slate-400 px-4 py-2 hover:text-purple-500 transition-colors" href="#">
+            <span class="material-symbols-outlined" data-icon="trophy">trophy</span>
+            <span class="font-lexend text-[12px] font-semibold">Rankings</span>
+        </a>
+        <a class="flex flex-col items-center justify-center text-slate-400 px-4 py-2 hover:text-purple-500 transition-colors" href="#">
+            <span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+            <span class="font-lexend text-[12px] font-semibold">Profile</span>
+        </a>
+    </nav>
+
+    <!-- Decorative Elements -->
+    <div class="fixed top-40 -left-20 w-64 h-64 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="fixed bottom-40 -right-20 w-80 h-80 bg-secondary/5 rounded-full blur-3xl pointer-events-none"></div>
+
+    <script>
+        // UI helper for toggling tabs and stepper
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabs = document.querySelectorAll('.toggle-tab');
+            const topicGroup = document.getElementById('topicGroup');
+            const pdfGroup = document.getElementById('pdfGroup');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    const source = tab.getAttribute('data-source');
+                    if (source === 'topic') {
+                        topicGroup.style.display = 'block';
+                        pdfGroup.style.display = 'none';
+                    } else {
+                        topicGroup.style.display = 'none';
+                        pdfGroup.style.display = 'block';
+                    }
+                });
+            });
+
+            // Stepper logic
+            const decrementBtn = document.getElementById('decrementBtn');
+            const incrementBtn = document.getElementById('incrementBtn');
+            const range = document.getElementById('questionCount');
+            const display = document.getElementById('questionCountValue');
+
+            decrementBtn.addEventListener('click', () => {
+                range.value = Math.max(1, parseInt(range.value) - 1);
+                display.innerText = range.value;
+                // Dispatch input event for index.js
+                range.dispatchEvent(new Event('input', { bubbles: true }));
+            });
+
+            incrementBtn.addEventListener('click', () => {
+                range.value = Math.min(20, parseInt(range.value) + 1);
+                display.innerText = range.value;
+                range.dispatchEvent(new Event('input', { bubbles: true }));
+            });
+            
+            // Difficulty toggle helper
+            const levelBtns = document.querySelectorAll('.level-btn');
+            levelBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    levelBtns.forEach(b => {
+                        b.classList.remove('active', 'ring-4', 'ring-orange-200', 'scale-1000');
+                        b.classList.add('bouncy-hover');
+                    });
+                    btn.classList.add('active', 'scale-110');
+                    if(btn.dataset.level === 'medium') btn.classList.add('ring-4', 'ring-orange-200');
+                    btn.classList.remove('bouncy-hover');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

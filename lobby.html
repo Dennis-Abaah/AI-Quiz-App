@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Quiz Hub - Lobby</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700;800;900&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="config.js" defer></script>
+    <script src="lobby.js" defer></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary": "#745700",
+                        "error": "#b41340",
+                        "on-secondary-container": "#5b4400",
+                        "primary-fixed-dim": "#bd6efe",
+                        "on-primary": "#fceeff",
+                        "surface-variant": "#dbdddd",
+                        "error-dim": "#a70138",
+                        "surface-container-high": "#e1e3e3",
+                        "on-secondary": "#fff1da",
+                        "outline": "#757777",
+                        "on-tertiary-fixed": "#2c4e48",
+                        "on-tertiary-fixed-variant": "#496b65",
+                        "on-secondary-fixed-variant": "#674d00",
+                        "inverse-surface": "#0c0f0f",
+                        "inverse-primary": "#bb6bfb",
+                        "outline-variant": "#acadad",
+                        "tertiary-dim": "#345650",
+                        "tertiary-fixed-dim": "#c5eae2",
+                        "inverse-on-surface": "#9c9d9d",
+                        "surface-tint": "#812fc1",
+                        "secondary-fixed": "#f9cc61",
+                        "background": "#f6f6f6",
+                        "surface-bright": "#f6f6f6",
+                        "surface-container": "#e7e8e8",
+                        "surface": "#f6f6f6",
+                        "on-error": "#ffefef",
+                        "primary-fixed": "#c782ff",
+                        "on-background": "#2d2f2f",
+                        "primary": "#812fc1",
+                        "on-surface-variant": "#5a5c5c",
+                        "secondary-fixed-dim": "#eabe55",
+                        "on-tertiary-container": "#3e605a",
+                        "on-secondary-fixed": "#443100",
+                        "on-primary-fixed": "#000000",
+                        "primary-container": "#c782ff",
+                        "on-primary-fixed-variant": "#450073",
+                        "tertiary-container": "#d3f9f0",
+                        "on-tertiary": "#d5faf2",
+                        "on-error-container": "#510017",
+                        "surface-container-low": "#f0f1f1",
+                        "secondary-dim": "#664c00",
+                        "tertiary": "#40625c",
+                        "error-container": "#f74b6d",
+                        "on-primary-container": "#38005e",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-container": "#f9cc61",
+                        "surface-container-highest": "#dbdddd",
+                        "on-surface": "#2d2f2f",
+                        "tertiary-fixed": "#d3f9f0",
+                        "primary-dim": "#741eb4",
+                        "surface-dim": "#d2d5d5"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Lexend"],
+                        "body": ["Plus Jakarta Sans"],
+                        "label": ["Lexend"]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .ripple-circle {
+            animation: ripple 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        .ripple-circle:nth-child(2) { animation-delay: 1s; }
+        .ripple-circle:nth-child(3) { animation-delay: 2s; }
+        
+        @keyframes ripple {
+            0% { transform: scale(0.8); opacity: 0.8; }
+            100% { transform: scale(2.5); opacity: 0; }
+        }
+
+        .dot-bounce {
+            animation: dot-bounce 1.4s infinite ease-in-out both;
+        }
+        .dot-bounce:nth-child(2) { animation-delay: 0.2s; }
+        .dot-bounce:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes dot-bounce {
+            0%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+        }
+        .glow-soft {
+            box-shadow: 0 0 30px rgba(129, 47, 193, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-white font-body text-on-background min-h-screen overflow-x-hidden">
+    <!-- TopAppBar -->
+    <header class="fixed top-0 w-full z-50 rounded-b-[3rem] bg-white/60 backdrop-blur-md shadow-[0_10px_30px_-15px_rgba(157,78,221,0.15)] flex justify-between items-center px-8 py-4">
+        <div class="flex items-center gap-2">
+            <span class="text-2xl font-black tracking-tight text-purple-600 italic font-headline cursor-pointer" onclick="window.location.href='index.html'">Quiz Hub</span>
+        </div>
+        <div class="flex gap-4">
+            <button id="cancelBtn" class="material-symbols-outlined text-purple-600 hover:scale-105 transition-transform duration-200" title="Cancel Match">logout</button>
+        </div>
+    </header>
+
+    <main class="pt-24 pb-32 flex flex-col items-center justify-center min-h-screen px-6">
+        <!-- The Radar Section -->
+        <div class="relative w-full max-w-lg aspect-square flex items-center justify-center mb-12">
+            <!-- Concentric Ripple Circles -->
+            <div class="absolute w-40 h-40 bg-secondary-container/30 rounded-full ripple-circle"></div>
+            <div class="absolute w-40 h-40 bg-secondary-container/20 rounded-full ripple-circle"></div>
+            <div class="absolute w-40 h-40 bg-secondary-container/10 rounded-full ripple-circle"></div>
+            
+            <!-- Central Avatar -->
+            <div class="relative z-10 w-48 h-48 bg-surface-container-lowest rounded-full flex flex-col items-center justify-center shadow-2xl border-4 border-secondary-container glow-soft">
+                <div class="w-32 h-32 rounded-full overflow-hidden mb-2 border-4 border-white shadow-inner">
+                    <img alt="User Avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAS6gyKKDLOSQPuj67x1FTFWCT8EGwT30GHpJRnI_CNH4gOiz-243Ay87QyVaEmRjMfiUOUZjkckHHb2-h0u42gZIBHtGbcsDz2jf7D2cReUBMIgzuXjyPivn4Q-k3rb_1BT8lCogBSr1L9qkmDSfnpuflzaPPOwAxx29IrLP9l40BCVbyEtggeZwBkF7CNdLq8C5PG3e3LlqpYd3bEjNut5cnLbXk2lNOUxuBB8qyJgSqk3uYPBEkIUMaRQ_rpPmxt0e7WpRJQaF0"/>
+                </div>
+                <span class="font-headline font-bold text-secondary text-sm">SEARCHING...</span>
+            </div>
+
+            <!-- Floating Decorative Icons -->
+            <div class="absolute top-10 right-10 text-4xl animate-bounce">🎉</div>
+            <div class="absolute bottom-20 left-0 text-3xl opacity-50">✨</div>
+        </div>
+
+        <!-- Connection Status -->
+        <div class="text-center mb-10">
+            <h1 class="font-headline text-3xl font-extrabold text-on-background mb-3">
+                Waiting for a Challenger
+                <span class="inline-flex gap-1">
+                    <span class="dot-bounce text-primary">.</span>
+                    <span class="dot-bounce text-primary">.</span>
+                    <span class="dot-bounce text-primary">.</span>
+                </span>
+            </h1>
+            <p class="text-on-surface-variant font-medium text-lg">Send this link to a friend to start the match!</p>
+            <p class="text-primary font-body font-bold mt-2">PIN: <span id="gameCodeDisplay" class="font-black">----</span></p>
+        </div>
+
+        <!-- Link Section (Bento Card Style) -->
+        <section class="w-full max-w-md bg-surface-container-low p-4 sm:p-8 rounded-[2rem] shadow-inner relative overflow-hidden">
+            <div class="absolute -right-4 -top-4 w-24 h-24 bg-primary/5 rounded-full blur-2xl"></div>
+            <label class="block text-xs sm:text-sm font-label font-black text-on-surface-variant mb-4 uppercase tracking-widest px-2">Battle Link</label>
+            <div class="flex flex-col sm:flex-row items-center gap-2 bg-surface-container-lowest p-2 rounded-2xl sm:rounded-full border-4 border-surface-container-high focus-within:border-primary transition-all shadow-sm">
+                <input id="shareLink" class="w-full sm:flex-1 bg-transparent border-none focus:ring-0 px-4 font-headline font-semibold text-primary truncate text-center sm:text-left" readonly="" type="text" value="quizhub.app/join?game=..."/>
+                <button id="copyBtn" class="w-full sm:w-auto bg-secondary-container hover:bg-secondary hover:text-white text-on-secondary-container font-headline font-bold py-3 px-6 rounded-xl sm:rounded-full transition-all active:scale-95 shadow-md flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined" data-icon="content_copy">content_copy</span>
+                    <span>Copy</span>
+                </button>
+            </div>
+            
+            <div class="mt-8 grid grid-cols-2 gap-4">
+                <div id="shareWhatsapp" class="flex flex-col items-center justify-center p-4 bg-surface-container-lowest rounded-2xl hover:scale-105 transition-all cursor-pointer group">
+                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-2 group-hover:bg-green-200 transition-colors">
+                        <span class="material-symbols-outlined text-green-600">share</span>
+                    </div>
+                    <span class="font-label text-xs font-bold text-on-surface">WhatsApp</span>
+                </div>
+                <div id="shareMessenger" class="flex flex-col items-center justify-center p-4 bg-surface-container-lowest rounded-2xl hover:scale-105 transition-all cursor-pointer group">
+                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-2 group-hover:bg-blue-200 transition-colors">
+                        <span class="material-symbols-outlined text-blue-600">send</span>
+                    </div>
+                    <span class="font-label text-xs font-bold text-on-surface">Messenger</span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- BottomNavBar -->
+    <nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-2 bg-slate-50/80 backdrop-blur-xl z-50 rounded-t-[3rem] shadow-[0_-10px_40px_rgba(157,78,221,0.1)]">
+        <a class="flex flex-col items-center justify-center text-slate-400 px-4 py-2 hover:text-purple-500 transition-colors" href="index.html">
+            <span class="material-symbols-outlined" data-icon="home_app_logo">home_app_logo</span>
+            <span class="font-lexend text-[12px] font-semibold">Home</span>
+        </a>
+        <a class="flex flex-col items-center justify-center bg-purple-100 text-purple-700 rounded-[2rem] px-6 py-2 scale-110 -translate-y-2 shadow-inner" href="#">
+            <span class="material-symbols-outlined" data-icon="swords" style="font-variation-settings: 'FILL' 1;">swords</span>
+            <span class="font-lexend text-[12px] font-semibold">Battles</span>
+        </a>
+        <a class="flex flex-col items-center justify-center text-slate-400 px-4 py-2 hover:text-purple-500 transition-colors" href="#">
+            <span class="material-symbols-outlined" data-icon="trophy">trophy</span>
+            <span class="font-lexend text-[12px] font-semibold">Rankings</span>
+        </a>
+        <a class="flex flex-col items-center justify-center text-slate-400 px-4 py-2 hover:text-purple-500 transition-colors" href="#">
+            <span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+            <span class="font-lexend text-[12px] font-semibold">Profile</span>
+        </a>
+    </nav>
+</body>
+</html>

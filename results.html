@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Quiz Hub - Results</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800;900&amp;family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="config.js" defer></script>
+    <script src="results.js" defer></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary": "#745700",
+                        "error": "#b41340",
+                        "on-secondary-container": "#5b4400",
+                        "primary-fixed-dim": "#bd6efe",
+                        "on-primary": "#fceeff",
+                        "surface-variant": "#dbdddd",
+                        "error-dim": "#a70138",
+                        "surface-container-high": "#e1e3e3",
+                        "on-secondary": "#fff1da",
+                        "outline": "#757777",
+                        "on-tertiary-fixed": "#2c4e48",
+                        "on-tertiary-fixed-variant": "#496b65",
+                        "on-secondary-fixed-variant": "#674d00",
+                        "inverse-surface": "#0c0f0f",
+                        "inverse-primary": "#bb6bfb",
+                        "outline-variant": "#acadad",
+                        "tertiary-dim": "#345650",
+                        "tertiary-fixed-dim": "#c5eae2",
+                        "inverse-on-surface": "#9c9d9d",
+                        "surface-tint": "#812fc1",
+                        "secondary-fixed": "#f9cc61",
+                        "background": "#ffffff",
+                        "surface-bright": "#f6f6f6",
+                        "surface-container": "#e7e8e8",
+                        "surface": "#f6f6f6",
+                        "on-error": "#ffefef",
+                        "primary-fixed": "#c782ff",
+                        "on-background": "#2d2f2f",
+                        "primary": "#812fc1",
+                        "on-surface-variant": "#5a5c5c",
+                        "secondary-fixed-dim": "#eabe55",
+                        "on-tertiary-container": "#3e605a",
+                        "on-secondary-fixed": "#443100",
+                        "on-primary-fixed": "#000000",
+                        "primary-container": "#c782ff",
+                        "on-primary-fixed-variant": "#450073",
+                        "tertiary-container": "#d3f9f0",
+                        "on-tertiary": "#d5faf2",
+                        "on-error-container": "#510017",
+                        "surface-container-low": "#f0f1f1",
+                        "secondary-dim": "#664c00",
+                        "tertiary": "#40625c",
+                        "error-container": "#f74b6d",
+                        "on-primary-container": "#38005e",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-container": "#f9cc61",
+                        "surface-container-highest": "#dbdddd",
+                        "on-surface": "#2d2f2f",
+                        "tertiary-fixed": "#d3f9f0",
+                        "primary-dim": "#741eb4",
+                        "surface-dim": "#d2d5d5"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Lexend"],
+                        "body": ["Plus Jakarta Sans"],
+                        "label": ["Lexend"]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .trophy-glow {
+            box-shadow: 0 0 60px 10px rgba(249, 204, 97, 0.4);
+        }
+        .winner-card {
+            background: #fdf6e7;
+            border: 2px solid #f9cc61;
+        }
+        .loser-card {
+            background: #f1f5f9;
+            border: 2px solid #e2e8f0;
+        }
+        .results-player-card {
+            padding: 2rem;
+            border-radius: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.3s ease;
+        }
+        .results-player-card:hover {
+            transform: translateY(-8px);
+        }
+        .player-name {
+            font-family: 'Lexend', sans-serif;
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+        .score-value {
+            font-family: 'Lexend', sans-serif;
+            font-weight: 900;
+            font-size: 3rem;
+            line-height: 1;
+            color: #812fc1;
+            margin-bottom: 0.25rem;
+        }
+        .player-avatar {
+            width: 4rem;
+            height: 4rem;
+            border-radius: 50%;
+            background: #812fc1;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 2rem;
+            margin: 0 auto 1rem;
+        }
+    </style>
+</head>
+<body class="bg-background font-body text-on-background overflow-x-hidden">
+    <!-- TopAppBar -->
+    <header class="fixed top-0 w-full z-50 rounded-b-[3rem] bg-white/60 backdrop-blur-md shadow-[0_10px_30px_-15px_rgba(157,78,221,0.15)] flex justify-between items-center px-8 py-4">
+        <div class="flex items-center gap-2">
+            <span class="text-2xl font-black tracking-tight text-purple-600 italic font-headline cursor-pointer" onclick="window.location.href='index.html'">Quiz Hub</span>
+        </div>
+        <button class="w-10 h-10 flex items-center justify-center rounded-full bg-surface-container-low text-purple-600">
+            <span class="material-symbols-outlined">person</span>
+        </button>
+    </header>
+
+    <!-- Results Loading -->
+    <main id="resultsLoading" class="min-h-screen flex flex-col items-center justify-center p-6 text-center">
+        <div class="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mb-6"></div>
+        <h2 class="font-headline font-black text-2xl">Calculating Glory...</h2>
+    </main>
+
+    <!-- Results UI -->
+    <main id="resultsUI" style="display: none;" class="pt-24 pb-32 px-6 min-h-screen flex flex-col items-center justify-center text-center">
+        <div class="w-full max-w-2xl flex flex-col items-center">
+            
+            <!-- Result Title Section -->
+            <div class="mb-12">
+                <div id="resultIcon" class="text-9xl mb-4">👑</div>
+                <h1 id="resultTitle" class="font-headline font-black text-5xl md:text-6xl text-on-background tracking-tight mb-2">VICTORY!</h1>
+                <p id="resultSubtitle" class="text-on-surface-variant font-medium text-xl">You dominated the arena!</p>
+            </div>
+
+            <!-- Scoreboard Area -->
+            <div id="scoreboard" class="grid grid-cols-2 gap-6 w-full mb-12">
+                <!-- Dynamically populated from results.js -->
+            </div>
+
+            <!-- Stats Bento Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4 w-full mb-12">
+                <div class="bg-surface-container-low p-6 rounded-2xl text-left border-b-4 border-secondary">
+                    <span class="material-symbols-outlined text-secondary mb-2">check_circle</span>
+                    <p class="text-[10px] font-black text-on-surface-variant uppercase tracking-widest">Correct</p>
+                    <p class="font-headline text-2xl font-black"><span id="statCorrect">0</span>/<span id="statTotal">0</span></p>
+                </div>
+                <div class="bg-surface-container-low p-6 rounded-2xl text-left border-b-4 border-primary">
+                    <span class="material-symbols-outlined text-primary mb-2">bolt</span>
+                    <p class="text-[10px] font-black text-on-surface-variant uppercase tracking-widest">Accuracy</p>
+                    <p id="statAccuracy" class="font-headline text-2xl font-black">0%</p>
+                </div>
+                <div class="bg-primary-container/20 p-6 rounded-2xl text-left col-span-2 md:col-span-1 border-b-4 border-primary">
+                    <span class="material-symbols-outlined text-primary mb-2">trending_up</span>
+                    <p class="text-[10px] font-black text-on-surface-variant uppercase tracking-widest">Rank Up</p>
+                    <p class="font-headline text-2xl font-black text-primary">Master I</p>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col md:flex-row items-center gap-6 w-full max-w-md">
+                <button id="rematchBtn" class="w-full bg-primary text-white font-headline font-black text-xl py-6 rounded-2xl shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-3">
+                    <span class="material-symbols-outlined text-3xl">replay</span>
+                    REMATCH
+                </button>
+                <button id="homeBtn" class="w-full md:w-24 bg-surface-container-highest text-on-surface-variant font-headline font-black text-xl py-6 rounded-2xl shadow-md hover:scale-105 active:scale-95 transition-all flex items-center justify-center">
+                    <span class="material-symbols-outlined text-3xl">home</span>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- BottomNavBar -->
+    <nav class="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-2 bg-slate-50/80 backdrop-blur-xl rounded-t-[3rem] shadow-[0_-10px_40px_rgba(157,78,221,0.1)] z-50">
+        <a class="flex flex-col items-center justify-center text-slate-400 px-4 py-2 hover:text-purple-500 transition-colors" href="index.html">
+            <span class="material-symbols-outlined">home_app_logo</span>
+            <span class="font-lexend text-[12px] font-semibold">Home</span>
+        </a>
+        <a class="flex flex-col items-center justify-center bg-purple-100 text-purple-700 rounded-[2rem] px-6 py-2 scale-110 -translate-y-2 shadow-inner" href="#">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">swords</span>
+            <span class="font-lexend text-[12px] font-semibold">Battles</span>
+        </a>
+        <a class="flex flex-col items-center justify-center text-slate-400 px-4 py-2 hover:text-purple-500 transition-colors" href="#">
+            <span class="material-symbols-outlined">trophy</span>
+            <span class="font-lexend text-[12px] font-semibold">Rankings</span>
+        </a>
+        <a class="flex flex-col items-center justify-center text-slate-400 px-4 py-2 hover:text-purple-500 transition-colors" href="#">
+            <span class="material-symbols-outlined">account_circle</span>
+            <span class="font-lexend text-[12px] font-semibold">Profile</span>
+        </a>
+    </nav>
+</body>
+</html>

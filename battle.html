@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Quiz Hub - Battle Arena</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800;900&amp;family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="config.js" defer></script>
+    <script src="battle.js" defer></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "secondary": "#745700",
+                      "error": "#b41340",
+                      "on-secondary-container": "#5b4400",
+                      "primary-fixed-dim": "#bd6efe",
+                      "on-primary": "#fceeff",
+                      "surface-variant": "#dbdddd",
+                      "error-dim": "#a70138",
+                      "surface-container-high": "#e1e3e3",
+                      "on-secondary": "#fff1da",
+                      "outline": "#757777",
+                      "on-tertiary-fixed": "#2c4e48",
+                      "on-tertiary-fixed-variant": "#496b65",
+                      "on-secondary-fixed-variant": "#674d00",
+                      "inverse-surface": "#0c0f0f",
+                      "inverse-primary": "#bb6bfb",
+                      "outline-variant": "#acadad",
+                      "tertiary-dim": "#345650",
+                      "tertiary-fixed-dim": "#c5eae2",
+                      "inverse-on-surface": "#9c9d9d",
+                      "surface-tint": "#812fc1",
+                      "secondary-fixed": "#f9cc61",
+                      "background": "#f6f6f6",
+                      "surface-bright": "#f6f6f6",
+                      "surface-container": "#e7e8e8",
+                      "surface": "#f6f6f6",
+                      "on-error": "#ffefef",
+                      "primary-fixed": "#c782ff",
+                      "on-background": "#2d2f2f",
+                      "primary": "#812fc1",
+                      "on-surface-variant": "#5a5c5c",
+                      "secondary-fixed-dim": "#eabe55",
+                      "on-tertiary-container": "#3e605a",
+                      "on-secondary-fixed": "#443100",
+                      "on-primary-fixed": "#000000",
+                      "primary-container": "#c782ff",
+                      "on-primary-fixed-variant": "#450073",
+                      "tertiary-container": "#d3f9f0",
+                      "on-tertiary": "#d5faf2",
+                      "on-error-container": "#510017",
+                      "surface-container-low": "#f0f1f1",
+                      "secondary-dim": "#664c00",
+                      "tertiary": "#40625c",
+                      "error-container": "#f74b6d",
+                      "on-primary-container": "#38005e",
+                      "surface-container-lowest": "#ffffff",
+                      "secondary-container": "#f9cc61",
+                      "surface-container-highest": "#dbdddd",
+                      "on-surface": "#2d2f2f",
+                      "tertiary-fixed": "#d3f9f0",
+                      "primary-dim": "#741eb4",
+                      "surface-dim": "#d2d5d5"
+              },
+              "borderRadius": {
+                      "DEFAULT": "1rem",
+                      "lg": "2rem",
+                      "xl": "3rem",
+                      "full": "9999px"
+              },
+              "fontFamily": {
+                      "headline": ["Lexend"],
+                      "body": ["Plus Jakarta Sans"],
+                      "label": ["Lexend"]
+              }
+            },
+          },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .gel-indicator {
+            background: linear-gradient(180deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 50%);
+        }
+        .convex-button {
+            box-shadow: 0 6px 0 0 rgba(0,0,0,0.1);
+        }
+        .convex-button:active {
+            transform: translateY(2px);
+            box-shadow: 0 4px 0 0 rgba(0,0,0,0.1);
+        }
+        .option-card.correct {
+            background-color: #d3f9f0 !important;
+            border-color: #40625c !important;
+            color: #40625c !important;
+        }
+        .option-card.wrong {
+            background-color: #f74b6d !important;
+            border-color: #b41340 !important;
+            color: #ffffff !important;
+        }
+        .option-card.disabled {
+            pointer-events: none;
+            opacity: 0.8;
+        }
+        .timer-value.warning { color: #f59e0b; }
+        .timer-value.danger { color: #ef4444; animation: heartbeat 0.5s infinite; }
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="bg-white font-body text-on-surface antialiased min-h-screen flex flex-col overflow-x-hidden">
+    <!-- TopAppBar -->
+    <header class="fixed top-0 w-full z-50 rounded-b-[3rem] bg-white/60 backdrop-blur-md shadow-[0_10px_30px_-15px_rgba(157,78,221,0.15)] flex justify-between items-center px-8 py-4">
+        <div class="flex items-center gap-3">
+            <span class="text-2xl font-black tracking-tight text-purple-600 italic font-headline cursor-pointer" onclick="window.location.href='index.html'">Quiz Hub</span>
+        </div>
+        <div class="flex items-center gap-4">
+            <button class="material-symbols-outlined text-purple-600 text-2xl hover:scale-105 transition-transform duration-200">person</button>
+        </div>
+    </header>
+
+    <!-- Loading State -->
+    <main id="loadingState" class="flex-grow flex flex-col items-center justify-center pt-24 px-6 text-center">
+        <div class="relative w-48 h-48 mb-8 flex items-center justify-center">
+            <div class="absolute inset-0 border-8 border-primary/20 rounded-full"></div>
+            <div class="absolute inset-0 border-8 border-primary border-t-transparent rounded-full animate-spin"></div>
+            <span class="material-symbols-outlined text-primary text-6xl" style="font-variation-settings: 'FILL' 1;">magic_button</span>
+        </div>
+        <h2 class="font-headline font-black text-3xl mb-4 text-on-surface">Quiz Hub is preparing the arena</h2>
+        <p class="loading-text text-on-surface-variant font-medium text-lg">Generating high-quality questions for your duel...</p>
+    </main>
+
+    <!-- Battle UI -->
+    <main id="battleUI" style="display: none;" class="flex-grow pt-24 pb-32 px-6 max-w-5xl mx-auto w-full flex flex-col gap-8">
+        
+        <!-- Race Section -->
+        <section class="w-full bg-surface-container-low rounded-[2rem] p-4 sm:p-8 shadow-inner relative overflow-hidden">
+            <div class="flex justify-between items-end mb-6 font-headline font-black text-[10px] sm:text-sm uppercase tracking-widest text-on-surface-variant gap-2">
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 sm:border-4 border-primary overflow-hidden shadow-lg bg-white">
+                        <img alt="Me" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCdIvWBOfMbSEGJ9gIV4ISZNdNjy-UXXGa22QB3a70M699OyiXHhFjvkZbQEvdz5r9a7WcPFYT93iiELHhWie_y4uMEA-stSNUyI9Q6MDl3AXP2VvCF4WN9lvjjXgDUf6awI7aIOY1joxi9N9LQLh53YQTSPWicwY6jo2ooYzIn6F8Y2PXrJpiZp8Xmt94PiB_qcYQMwFEgs2I29AXcncoqcDlakjFORQve_C0E7irKUq786wp-zwM-FjO9UEUpIoEoWAF59y2xA14"/>
+                    </div>
+                    <div>
+                        <p id="player1Name" class="truncate max-w-[60px] sm:max-w-none text-[10px] sm:text-xs">You</p>
+                        <p id="player1Score" class="text-primary font-black text-sm sm:text-lg">0</p>
+                    </div>
+                </div>
+                <div class="flex flex-col items-center">
+                    <p id="timerValue" class="text-2xl sm:text-4xl font-headline font-black text-on-surface leading-none">15</p>
+                    <p class="text-[8px] sm:text-[10px] opacity-60">SEC</p>
+                </div>
+                <div class="flex items-center gap-2 sm:gap-3 text-right">
+                    <div>
+                        <p id="player2Name" class="truncate max-w-[60px] sm:max-w-none text-[10px] sm:text-xs">Opponent</p>
+                        <p id="player2Score" class="text-secondary font-black text-sm sm:text-lg">0</p>
+                    </div>
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 sm:border-4 border-secondary overflow-hidden shadow-lg bg-white">
+                        <img alt="Opponent" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDa012mQZr3AYPetUEPFPmGU9HZ_KoMoCIKT7fecJpfz9nmX9suubwUn0CLIgrKzQRpeexMtPUVm5gxNFxN7Qo85YBZ4PPzOI-zd9L8ThYNrRrhGXKTS49MEr1VZtAW2BEbayzv_OWr23Ssat28fsDC4mVjeEgMAINRfJfBDfnoTGSVmmwlJzALWG6Ya9ThPrVPaeR2Ypgfer08Dja5-VThMcTBp9KPWDwTD7_bZuMsJMfdtQ6chrE1bYGV8R3bMmFl2wnMCmmqoHE"/>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Track -->
+            <div class="relative h-4 w-full bg-surface-container-high rounded-full overflow-hidden mb-2">
+                <div id="progressBar" class="absolute top-0 left-0 h-full w-[0%] bg-gradient-to-r from-primary to-primary-container rounded-full transition-all duration-500 shadow-lg">
+                    <div class="w-full h-1/2 absolute top-0 left-0 gel-indicator opacity-40"></div>
+                </div>
+            </div>
+            <div class="flex justify-between px-1">
+                <span class="material-symbols-outlined text-on-surface-variant/20 text-sm">flag</span>
+                <span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings: 'FILL' 1;">stars</span>
+            </div>
+        </section>
+
+        <!-- Question View -->
+        <section id="questionCard" class="flex-grow flex flex-col items-center justify-center gap-6 sm:gap-10 py-6 sm:py-8 mt-4 sm:mt-0">
+            <!-- Question Box -->
+            <div class="w-full max-w-3xl bg-white rounded-3xl p-8 pt-10 sm:p-12 shadow-2xl border border-surface-container/30 relative overflow-hidden group mb-4">
+                <div class="absolute -top-1 left-1/2 -translate-x-1/2 bg-primary text-white px-6 sm:px-8 py-2 sm:py-3 rounded-b-xl sm:rounded-full font-headline font-black text-xs sm:text-sm shadow-md z-20 whitespace-nowrap border-x-4 border-b-4 border-primary-container">
+                    <span id="questionCounter">QUESTION --/--</span>
+                </div>
+                <h2 id="questionText" class="font-headline text-xl sm:text-3xl md:text-4xl font-extrabold text-center text-on-surface leading-tight mt-6 relative z-10 transition-all">
+                    ...
+                </h2>
+                <!-- Decorative Blobs -->
+                <div class="absolute -right-20 -bottom-20 w-64 h-64 bg-primary/5 rounded-full blur-[80px]"></div>
+                <div class="absolute -left-20 -top-20 w-64 h-64 bg-secondary/5 rounded-full blur-[80px]"></div>
+            </div>
+
+            <!-- Options -->
+            <div id="optionsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-6 w-full max-w-3xl">
+                <!-- Dynamic Content from battle.js -->
+            </div>
+        </section>
+
+        <!-- Battle Bottom Stats -->
+        <section class="max-w-3xl mx-auto w-full grid grid-cols-2 gap-3 sm:gap-6 mb-4">
+            <div class="bg-white p-4 sm:p-6 rounded-2xl sm:rounded-3xl flex items-center gap-2 sm:gap-4 shadow-xl border-l-4 sm:border-l-8 border-primary">
+                <div class="p-2 sm:p-4 bg-primary/10 rounded-xl sm:rounded-2xl shrink-0">
+                    <span class="material-symbols-outlined text-primary text-2xl sm:text-4xl" style="font-variation-settings: 'FILL' 1;">bolt</span>
+                </div>
+                <div class="min-w-0">
+                    <p class="text-on-surface-variant text-[8px] sm:text-[10px] font-black uppercase tracking-widest truncate">Powerup</p>
+                    <p class="font-headline text-sm sm:text-xl font-black text-on-surface">Blitz</p>
+                </div>
+            </div>
+            <div class="bg-white p-4 sm:p-6 rounded-2xl sm:rounded-3xl flex items-center gap-2 sm:gap-4 shadow-xl border-l-4 sm:border-l-8 border-secondary translate-y-2 sm:translate-y-4">
+                <div class="p-2 sm:p-4 bg-secondary/10 rounded-xl sm:rounded-2xl shrink-0">
+                    <span class="material-symbols-outlined text-secondary text-2xl sm:text-4xl" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+                </div>
+                <div class="min-w-0">
+                    <p class="text-on-surface-variant text-[8px] sm:text-[10px] font-black uppercase tracking-widest truncate">Multiplier</p>
+                    <p class="font-headline text-sm sm:text-xl font-black text-on-surface">x2 🔥</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- BottomNavBar -->
+    <nav class="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-2 bg-slate-50/80 backdrop-blur-xl z-50 rounded-t-[3rem] shadow-[0_-10px_40px_rgba(157,78,221,0.1)]">
+        <a class="flex flex-col items-center justify-center text-slate-400 px-4 py-2 hover:text-purple-500 transition-colors" href="index.html">
+            <span class="material-symbols-outlined">home_app_logo</span>
+            <span class="font-lexend text-[12px] font-semibold">Home</span>
+        </a>
+        <a class="flex flex-col items-center justify-center bg-purple-100 text-purple-700 rounded-[2rem] px-6 py-2 scale-110 -translate-y-2 shadow-inner" href="#">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">swords</span>
+            <span class="font-lexend text-[12px] font-semibold">Battles</span>
+        </a>
+        <a class="flex flex-col items-center justify-center text-slate-400 px-4 py-2 hover:text-purple-500 transition-colors" href="#">
+            <span class="material-symbols-outlined">trophy</span>
+            <span class="font-lexend text-[12px] font-semibold">Rankings</span>
+        </a>
+        <a class="flex flex-col items-center justify-center text-slate-400 px-4 py-2 hover:text-purple-500 transition-colors" href="#">
+            <span class="material-symbols-outlined">account_circle</span>
+            <span class="font-lexend text-[12px] font-semibold">Profile</span>
+        </a>
+    </nav>
+
+    <script>
+        // Custom Styles for Option Cards (matching old JS expectations)
+        // .option-card style will be managed in index.css or added here
+        const style = document.createElement('style');
+        style.innerHTML = `
+            .option-card {
+                cursor: pointer;
+                background: white;
+                border-radius: 1.25rem;
+                padding: 1rem;
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+                border-bottom: 4px solid #e2e8f0;
+                border-left: 1px solid #f1f5f9;
+                border-right: 1px solid #f1f5f9;
+                position: relative;
+                overflow: hidden;
+            }
+            @media (min-width: 640px) {
+                .option-card {
+                    padding: 1.5rem;
+                    border-radius: 1.5rem;
+                    gap: 1.25rem;
+                    border-bottom-width: 6px;
+                }
+            }
+            .option-card:hover:not(.disabled) {
+                transform: translateY(-4px) scale(1.02);
+                border-bottom-width: 8px;
+                box-shadow: 0 15px 30px rgba(0,0,0,0.08);
+            }
+            .option-card:active:not(.disabled) {
+                transform: translateY(2px);
+                border-bottom-width: 2px;
+            }
+            .option-label {
+                width: 2.5rem;
+                height: 2.5rem;
+                background: #f1f5f9;
+                color: #64748b;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 0.75rem;
+                font-family: 'Lexend', sans-serif;
+                font-weight: 900;
+                font-size: 1.125rem;
+                flex-shrink: 0;
+            }
+            @media (min-width: 640px) {
+                .option-label {
+                    width: 3.5rem;
+                    height: 3.5rem;
+                    border-radius: 1rem;
+                    font-size: 1.5rem;
+                }
+            }
+            .option-text {
+                font-family: 'Lexend', sans-serif;
+                font-weight: 700;
+                font-size: 0.875rem;
+                color: #1e293b;
+            }
+            @media (min-width: 640px) {
+                .option-text {
+                    font-size: 1.125rem;
+                }
+            }
+            .option-card.correct {
+                background: #ecfdf5 !important;
+                border-color: #10b981 !important;
+            }
+            .option-card.correct .option-label {
+                background: #10b981;
+                color: white;
+            }
+            .option-card.wrong {
+                background: #fef2f2 !important;
+                border-color: #ef4444 !important;
+            }
+            .option-card.wrong .option-label {
+                background: #ef4444;
+                color: white;
+            }
+            .option-card.disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

@@ -275,6 +275,21 @@
                     The Quiz is ready and warmed up
                 </p>
             </div>
+
+            <!-- Join Existing Game section -->
+            <div class="flex flex-col items-center pt-12 mt-12 border-t-2 border-surface-container-high max-w-sm mx-auto w-full">
+                <span class="font-headline font-bold text-xl mb-4 text-primary flex items-center gap-2">
+                    <span class="material-symbols-outlined" data-icon="sensor_door">sensor_door</span>
+                    Have a Room Code?
+                </span>
+                <div class="flex flex-col w-full gap-4">
+                    <input type="text" id="roomCodeInput" class="w-full px-6 py-4 rounded-xl border-4 border-surface-container-high focus:border-secondary focus:outline-none placeholder-on-surface-variant/50 font-headline font-bold text-2xl text-center shadow-inner text-on-surface transition-all uppercase tracking-[0.2em]" placeholder="ENTER CODE" maxlength="6" autocomplete="off" />
+                    <button id="joinRoomBtn" class="w-full px-8 py-4 rounded-xl font-headline font-bold text-xl text-white bg-secondary shadow-[0_4px_0_0_#5b4400] hover:bg-secondary-dim transition-all bouncy-hover bouncy-active flex items-center justify-center gap-3">
+                        <span class="material-symbols-outlined text-xl" data-icon="login">login</span>
+                        Join Game
+                    </button>
+                </div>
+            </div>
         </div>
     </main>
 

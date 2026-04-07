@@ -23,6 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const questionValue  = document.getElementById('questionCountValue');
   const levelSelector  = document.getElementById('levelSelector');
   const initBtn        = document.getElementById('initBtn');
+  const roomCodeInput  = document.getElementById('roomCodeInput');
+  const joinRoomBtn    = document.getElementById('joinRoomBtn');
 
   // PDF elements
   const pdfDropZone      = document.getElementById('pdfDropZone');
@@ -275,4 +277,34 @@ document.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
     }
   });
+
+  // ── Join Existing Game ──
+  if (joinRoomBtn && roomCodeInput) {
+    joinRoomBtn.addEventListener('click', () => {
+      const code = roomCodeInput.value.trim().toUpperCase();
+      if (!code) {
+        showToast('Please enter a room code', 'error');
+        roomCodeInput.focus();
+        return;
+      }
+      if (code.length !== 6) {
+        showToast('Room code must be 6 characters', 'error');
+        roomCodeInput.focus();
+        return;
+      }
+      
+      joinRoomBtn.disabled = true;
+      joinRoomBtn.innerHTML = '<span class="spinner" style="width:20px;height:20px;border-width:2px;border-color:#fff;border-bottom-color:transparent;border-radius:50%;display:inline-block;animation:spin 1s linear infinite;"></span> Joining...';
+      
+      setTimeout(() => {
+        navigateTo('join.html', { game: code });
+      }, 300);
+    });
+
+    roomCodeInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        joinRoomBtn.click();
+      }
+    });
+  }
 });
